@@ -1,0 +1,4 @@
+.svlangserver
+obj_dir/
+.nvim/
+dump.vcd
