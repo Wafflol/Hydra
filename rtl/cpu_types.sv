@@ -67,12 +67,12 @@ package cpu_types;
 
     typedef struct packed {
         logic [31:0] alu_result;
-        logic [31:0] rs2_data;
+        //logic [31:0] rs2_data;
         logic [31:0] pc_plus4;
         logic [4:0] rd;
         logic [2:0] funct3;
         logic reg_write;
-        logic mem_write;
+        //logic mem_write;
         result_t result_src;
     } ex_mem_t;
 

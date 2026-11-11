@@ -11,12 +11,14 @@ module datapath
     ex_mem_t ex_mem_m;
     mem_wb_t mem_wb_w;
 
+    // Execute Registers
+    logic [31:0] alu_result_e;
+    logic pc_src_e;
 
     // Writeback Registers
     logic [31:0] result_w;
     logic [4:0] rd_w;
     logic reg_write_w;
-
 
     // ====================================================
     // FETCH
@@ -150,7 +152,7 @@ module datapath
         jump_e = id_ex_e.jump;
     end
 
-    logic [31:0] op1_e, op2_e, alu_result_e;
+    logic [31:0] op1_e, op2_e;
 
     assign op1_e = alu_src_a_e ? pc_e : rs1_data_e;
     assign op2_e = alu_src_b_e ? imm_e : rs2_data_e;
@@ -162,7 +164,7 @@ module datapath
         .result(alu_result_e)
     );
 
-    logic taken_e, pc_src_e;
+    logic taken_e;
 
     branch_unit branch_unit(
         .rs1_data(rs1_data_e),
@@ -177,12 +179,10 @@ module datapath
         if (~rst_n) ex_mem_m <= '0;
         else if (en) ex_mem_m <= '{
             alu_result: alu_result_e,
-            rs2_data: rs2_data_e,
             pc_plus4: pc_plus4_e,
             rd: rd_e,
             funct3: funct3_e,
             reg_write: reg_write_e,
-            mem_write: mem_write_e,
             result_src: result_src_e
         };
     end

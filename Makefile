@@ -12,6 +12,15 @@ OBJ  = obj_dir/$(TOP)
 # All testbenches, for `make test`
 TOPS = $(basename $(notdir $(wildcard tb/tb_*.sv)))
 
+# Test programs: make prog PROG=basic builds sw/basic.S into
+# build/basic.hex (plus a disassembly in build/basic.dis) and copies it
+# to prog.hex, which instr_mem loads by default.
+PROG  ?= basic
+SW    = sw
+BUILD = build
+RV_CC = clang --target=riscv32 -march=rv32i -mabi=ilp32 -nostdlib
+RV_LD = ld.lld -Ttext=0 --image-base=0
+
 # Colors
 RESET  = \033[0m
 BOLD   = \033[1m
@@ -20,7 +29,7 @@ CYAN   = \033[36m
 YELLOW = \033[33m
 RED    = \033[31m
 
-.PHONY: all build run wave lint test clean
+.PHONY: all build run wave lint test prog clean
 
 all: run
 
@@ -47,7 +56,22 @@ lint:
 
 # Quiet: one line per testbench. Logs are kept in obj_dir/<tb>/ and
 # printed only when that testbench fails to build or run.
-test:
+prog: $(BUILD)/$(PROG).hex
+	@cp $< prog.hex
+	@printf "$(GREEN)$(BOLD)==> Built $(SW)/$(PROG).S -> prog.hex$(RESET)\n"
+
+# Assemble, link at address 0, then turn the raw binary into one
+# 32-bit hex word per line for $readmemh (od uses the host's byte order,
+# which is little-endian on x86, matching RISC-V)
+$(BUILD)/%.hex: $(SW)/%.S
+	@mkdir -p $(BUILD)
+	$(RV_CC) -c $< -o $(BUILD)/$*.o
+	$(RV_LD) $(BUILD)/$*.o -o $(BUILD)/$*.elf
+	llvm-objcopy -O binary $(BUILD)/$*.elf $(BUILD)/$*.bin
+	od -An -v -tx4 -w4 $(BUILD)/$*.bin | tr -d ' ' > $@
+	llvm-objdump -d $(BUILD)/$*.elf > $(BUILD)/$*.dis
+
+test: prog
 	@fail=0; \
 	for t in $(TOPS); do \
 		log=obj_dir/$$t; mkdir -p $$log; \
@@ -64,5 +88,5 @@ test:
 
 clean:
 	@printf "$(YELLOW)==> Cleaning...$(RESET)\n"
-	rm -rf obj_dir dump.vcd
+	rm -rf obj_dir dump.vcd $(BUILD) prog.hex
 	@printf "$(GREEN)==> Clean complete.$(RESET)\n"
