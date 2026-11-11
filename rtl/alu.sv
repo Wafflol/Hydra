@@ -1,10 +1,9 @@
 module alu
     import cpu_types::*;
 (
-    input  logic [31:0] op1,
-    input  logic [31:0] op2,
-    input  alu_op_t     alu_op,
-
+    input logic [31:0] op1,
+    input logic [31:0] op2,
+    input alu_op_t alu_op,
     output logic [31:0] result
 );
 

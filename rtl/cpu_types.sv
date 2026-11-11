@@ -40,4 +40,48 @@ package cpu_types;
         RESULT_MEM,
         RESULT_PC4
     } result_t;
+
+    typedef struct packed {
+        logic [31:0] instr;
+        logic [31:0] pc;
+        logic [31:0] pc_plus4;
+    } if_id_t;
+
+    typedef struct packed {
+        logic [31:0] pc;
+        logic [31:0] pc_plus4;
+        logic [31:0] imm;
+        logic [31:0] rs1_data;
+        logic [31:0] rs2_data;
+        logic [4:0] rd;
+        logic [2:0] funct3;
+        logic reg_write;
+        logic alu_src_a;
+        logic alu_src_b;
+        alu_op_t alu_op;
+        logic mem_write;
+        result_t result_src;
+        logic branch;
+        logic jump;
+    } id_ex_t;
+
+    typedef struct packed {
+        logic [31:0] alu_result;
+        logic [31:0] rs2_data;
+        logic [31:0] pc_plus4;
+        logic [4:0] rd;
+        logic [2:0] funct3;
+        logic reg_write;
+        logic mem_write;
+        result_t result_src;
+    } ex_mem_t;
+
+    typedef struct packed {
+        logic [31:0] alu_result;
+        logic [31:0] read_data;
+        logic [31:0] pc_plus4;
+        logic [4:0] rd;
+        logic reg_write;
+        result_t result_src;
+    } mem_wb_t;
 endpackage

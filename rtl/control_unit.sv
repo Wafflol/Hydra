@@ -19,10 +19,10 @@ module control_unit
     alu_op_t alu_decoder_out;
 
     alu_decoder alu_decoder(
-        .opcode (opcode_t'(opcode)),
+        .opcode(opcode_t'(opcode)),
         .funct3,
         .funct7_5,
-        .alu_op (alu_decoder_out)
+        .alu_op(alu_decoder_out)
     );
 
     always_comb begin : op

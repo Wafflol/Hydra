@@ -1,6 +1,6 @@
 module instr_mem #(parameter WORDS = 1024, parameter INIT = "prog.hex") (
     input logic clk,
-    input logic [$clog2(WORDS)-1:0] addr,
+    input logic [31:0] addr,
     output logic [31:0] instr
 );
 
@@ -8,6 +8,6 @@ module instr_mem #(parameter WORDS = 1024, parameter INIT = "prog.hex") (
     initial $readmemh(INIT, mem);
 
     always_ff @(posedge clk) begin
-        instr <= mem[addr];
+        instr <= mem[addr[$clog2(WORDS)+1:2]];
     end
 endmodule

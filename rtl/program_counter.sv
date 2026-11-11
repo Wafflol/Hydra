@@ -7,7 +7,7 @@ module program_counter (
 );
 
     always_ff @(posedge clk) begin
-        if (!rst_n) pc <= 32'd0;
+        if (~rst_n) pc <= 32'd0;
         else if (en) pc <= pc_next;
     end
 endmodule
